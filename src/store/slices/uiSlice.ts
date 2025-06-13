@@ -1,4 +1,3 @@
-// src/store/slices/uiSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { Notification, CalendarEvent } from '../../types';
@@ -10,6 +9,7 @@ interface UiState {
   mobileView: boolean; // 모바일 뷰 여부
   theme: 'light' | 'dark'; // 테마 (확장 가능성 고려)
   notifications: Notification[]; // 알림 목록
+  headerView: 'calendar' | 'tasks';
 }
 
 const initialState: UiState = {
@@ -19,6 +19,7 @@ const initialState: UiState = {
   mobileView: window.innerWidth < 768,
   theme: 'light',
   notifications: [],
+  headerView: 'calendar',
 };
 
 const uiSlice = createSlice({
@@ -113,6 +114,10 @@ const uiSlice = createSlice({
         (notification) => notification.timestamp > fiveSecondsAgo
       );
     },
+
+    setHeaderView: (state, action: PayloadAction<'calendar' | 'tasks'>) => {
+      state.headerView = action.payload;
+    },
   },
 });
 
@@ -128,6 +133,7 @@ export const {
   removeNotification,
   clearNotifications,
   removeOldNotifications,
+  setHeaderView,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

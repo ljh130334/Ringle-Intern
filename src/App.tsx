@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { setMobileView } from './store/slices/uiSlice';
+import CalendarHeader from './components/layout/CalendarHeader';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -17,26 +18,18 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch]);
 
-  // Redux 상태 연결 테스트
-  useEffect(() => {
-    console.log('Redux 상태 테스트:', {
-      currentDate,
-      view,
-      mobileView,
-      sidebarOpen,
-    });
-  }, [currentDate, view, mobileView, sidebarOpen]);
-
   return (
     <div className="min-h-screen bg-gray-50">
+      <CalendarHeader />
+
+      {/* 임시 상태 확인용 */}
       <div className="container mx-auto p-4">
         <div className="bg-white rounded-lg shadow-sm">
           <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              구글 캘린더 클론
-            </h1>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Redux 상태 확인
+            </h2>
 
-            {/* Redux 상태 확인용 임시 UI */}
             <div className="space-y-2 text-sm">
               <p>
                 <strong>현재 날짜:</strong> {currentDate}
@@ -53,7 +46,8 @@ function App() {
             </div>
 
             <div className="mt-6 text-gray-600">
-              <p>Redux Store 연결 완료!</p>
+              <p>헤더 구현 완료! 🎉</p>
+              <p>다음 단계: 사이드바 및 메인 캘린더 영역</p>
             </div>
           </div>
         </div>

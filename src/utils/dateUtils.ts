@@ -69,6 +69,20 @@ export const isCurrentMonth = (date: Date, currentDate: Date): boolean => {
 };
 
 /**
+ * 날짜가 현재 월에 속하는지 확인 (별칭)
+ */
+export const isSameMonthAsDate = (date: Date, currentDate: Date): boolean => {
+  return isSameMonth(date, currentDate);
+};
+
+/**
+ * 요일 이름 배열 가져오기
+ */
+export const getWeekNames = (): string[] => {
+  return WEEKDAY_NAMES.SHORT;
+};
+
+/**
  * 날짜 문자열을 Date 객체로 변환
  */
 export const parseDate = (dateString: string): Date => {
@@ -99,14 +113,14 @@ export const getMonthName = (date: Date): string => {
 };
 
 /**
- * 년월 형식으로 포맷팅 (예: 2025년 6월)
+ * 년월 형식으로 포맷팅 (예: 2024년 1월)
  */
 export const formatYearMonth = (date: Date): string => {
   return `${date.getFullYear()}년 ${getMonthName(date)}`;
 };
 
 /**
- * 날짜 범위 텍스트 생성 (예: 2025년 6월 1일 - 7일)
+ * 날짜 범위 텍스트 생성 (예: 2024년 1월 1일 - 7일)
  */
 export const formatDateRange = (startDate: Date, endDate: Date): string => {
   if (isSameMonth(startDate, endDate)) {
