@@ -8,32 +8,33 @@ const HeaderRight: React.FC = () => {
   const { headerView } = useAppSelector((state) => state.ui);
 
   return (
-    <div className="flex items-center px-[6px]">
+    <div className="flex items-center px-[6px] flex-shrink-0 overflow-hidden">
       <button
-        className="p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200"
+        className="p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200 flex-shrink-0"
         aria-label="검색"
       >
         <img src="/icons/search.svg" alt="검색" className="w-6 h-6" />
       </button>
 
       <button
-        className="my-[1px] p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200"
+        className="my-[1px] p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200 flex-shrink-0"
         aria-label="도움말"
       >
         <img src="/icons/help.svg" alt="도움말" className="w-6 h-6" />
       </button>
 
       <button
-        className="ml-1 p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200"
+        className="ml-1 p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200 flex-shrink-0"
         aria-label="설정"
       >
         <img src="/icons/settings.svg" alt="설정" className="w-6 h-6" />
       </button>
 
-      {/* 뷰 드롭다운 컴포넌트 */}
-      <ViewDropdown />
+      <div className="flex-shrink-0">
+        <ViewDropdown />
+      </div>
 
-      <div className="inline-flex ml-3">
+      <div className="inline-flex ml-3 flex-shrink-0">
         <button
           onClick={() => dispatch(setHeaderView('calendar'))}
           className={`py-[9px] flex items-center justify-center border border-r-0 border-[#747775] rounded-l-full transition-colors duration-200 ${
@@ -64,14 +65,14 @@ const HeaderRight: React.FC = () => {
       </div>
 
       <button
-        className="ml-2 p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200"
+        className="ml-2 p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200 flex-shrink-0"
         aria-label="Google 앱"
       >
         <img src="/icons/apps.svg" alt="Google 앱" className="w-6 h-6" />
       </button>
 
       <button
-        className="ml-2 w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all duration-200"
+        className="ml-2 w-10 h-10 rounded-full overflow-hidden hover:ring-2 hover:ring-blue-500 transition-all duration-200 flex-shrink-0"
         aria-label="계정"
       >
         <img

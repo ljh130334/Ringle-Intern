@@ -64,10 +64,10 @@ const ViewDropdown: React.FC = () => {
   ];
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative flex-shrink-0" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="ml-3 flex items-center px-[19px] py-[9px] border border-[#747775] rounded-[100px] hover:bg-[#E7E8EB] cursor-pointer transition-colors duration-200"
+        className="ml-3 flex items-center px-[19px] py-[9px] border border-[#747775] rounded-[100px] hover:bg-[#E7E8EB] cursor-pointer transition-colors duration-200 whitespace-nowrap"
       >
         <span className="text-sm font-medium text-gray-700">
           {getViewLabel(view)}
@@ -75,7 +75,7 @@ const ViewDropdown: React.FC = () => {
         <img
           src="/icons/arrow-down.svg"
           alt="드롭다운"
-          className={`w-4 h-4 ml-2 transition-transform duration-200 ${
+          className={`w-4 h-4 ml-2 transition-transform duration-200 flex-shrink-0 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
@@ -92,17 +92,19 @@ const ViewDropdown: React.FC = () => {
                 handleViewChange(option.key as CalendarView)
               }
               disabled={option.disabled}
-              className={`w-full text-left px-4 py-2 text-[14px] transition-colors duration-200 ${
+              className={`w-full text-left px-4 py-2 text-[14px] transition-colors duration-200 whitespace-nowrap ${
                 view === option.key
                   ? 'bg-[#E7E8EB] text-gray-700 font-medium'
                   : option.disabled
-                    ? 'cursor-not-allowed'
+                    ? 'cursor-not-allowed text-gray-400'
                     : 'text-gray-700 hover:bg-[#E7E8EB]'
               }`}
             >
               <div className="flex items-center justify-between">
                 <span>{option.label}</span>
-                <span className="text-[10px]">{option.shortkey}</span>
+                <span className="text-[10px] flex-shrink-0 ml-2">
+                  {option.shortkey}
+                </span>
               </div>
             </button>
           ))}

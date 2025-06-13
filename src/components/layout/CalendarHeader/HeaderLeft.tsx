@@ -29,7 +29,7 @@ const HeaderLeft: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center flex-shrink-0">
       <div className="flex items-center min-w-[238px] pr-[25px]">
         <button
           onClick={handleMenuClick}
@@ -47,7 +47,7 @@ const HeaderLeft: React.FC = () => {
             aria-hidden="true"
             role="presentation"
           />
-          <span className="text-[22px] font-normal pl-1 font-[500]">
+          <span className="text-[22px] font-normal pl-1 font-[500] whitespace-nowrap">
             Calendar
           </span>
         </div>
@@ -56,7 +56,7 @@ const HeaderLeft: React.FC = () => {
       <div className="flex items-center ml-2">
         <button
           onClick={handleTodayClick}
-          className="px-6 py-[9px] text-sm font-medium border border-[#747775] rounded-[100px] hover:bg-[#E7E8EB] transition-colors duration-200 mr-5"
+          className="px-6 py-[9px] text-sm font-medium border border-[#747775] rounded-[100px] hover:bg-[#E7E8EB] transition-colors duration-200 mr-5 whitespace-nowrap"
         >
           오늘
         </button>
@@ -78,7 +78,7 @@ const HeaderLeft: React.FC = () => {
           </button>
         </div>
 
-        <h1 className="text-[22px] font-normal text-gray-700 mx-2 px-2">
+        <h1 className="text-[22px] font-normal text-gray-700 mx-2 px-2 whitespace-nowrap">
           {formatYearMonth(new Date(currentDate))}
         </h1>
       </div>
