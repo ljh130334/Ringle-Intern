@@ -4,22 +4,22 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-// 변수 정의
+/* 변수 정의 */
 :root {
-  // Google 브랜드 컬러
+  /* Google 브랜드 컬러 */
   --google-blue: #4285f4;
   --google-red: #ea4335;
   --google-green: #34a853;
   --google-yellow: #fbbc04;
 
-  // UI 컬러
+  /* UI 컬러 */
   --border-color: #dadce0;
   --hover-bg: #f8f9fa;
   --calendar-border: #e8eaed;
   --sidebar-bg: #ffffff;
   --main-bg: #ffffff;
 
-  // 그림자
+  /* 그림자 */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
   --shadow-lg:
@@ -46,7 +46,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-// Tailwind 커스텀 컴포넌트
+/* Tailwind 커스텀 컴포넌트 */
 @layer components {
   .btn-primary {
     @apply bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200;
@@ -65,7 +65,7 @@ body {
   }
 }
 
-// 유틸리티 클래스
+/* 유틸리티 클래스 */
 @layer utilities {
   .container-responsive {
     @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
@@ -79,7 +79,7 @@ body {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
   }
 
-  // 스크롤바 스타일링
+  /* 스크롤바 스타일링 */
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: #cbd5e0 #f7fafc;
@@ -99,7 +99,7 @@ body {
   }
 }
 
-// 반응형 브레이크포인트별 스타일
+/* 반응형 브레이크포인트별 스타일 */
 @media (max-width: 767px) {
   body {
     font-size: 14px;
