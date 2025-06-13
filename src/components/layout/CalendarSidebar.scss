@@ -1,0 +1,107 @@
+// CalendarSidebar 컴포넌트 전용 스타일
+
+.custom-day-picker {
+  margin: 0;
+
+  .rdp-months {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rdp-month {
+    margin: 0;
+  }
+
+  .rdp-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 16px;
+  }
+
+  .rdp-caption_label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f1f1f;
+    padding-left: 9px;
+  }
+
+  // 네비게이션 버튼 (이전/다음 월)
+  .rdp-button_next,
+  .rdp-button_previous {
+    display: flex;
+    width: 24px;
+    height: 24px;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+      background: #eaecef;
+      border-radius: 50%;
+    }
+  }
+
+  .rdp-chevron {
+    fill: #444746;
+    width: 14px;
+    height: 14px;
+  }
+
+  .rdp-nav {
+    position: fixed;
+    top: 176px;
+    left: 176px;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+
+  // 요일 헤더
+  .rdp-weekday {
+    font-size: 10px;
+    font-weight: 500;
+    color: #444746;
+    padding-top: 0;
+  }
+
+  // 날짜 버튼
+  .rdp-day {
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #1f1f1f;
+
+    &:hover {
+      background: #eaecef;
+      border-radius: 50%;
+    }
+  }
+
+  .rdp-day_button {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    margin: 3px;
+  }
+
+  // 오늘 날짜
+  .rdp-today,
+  .rdp-button[aria-current='date'] {
+    background: #0b57d0 !important;
+    color: white !important;
+    border-radius: 50%;
+    font-weight: 600;
+  }
+
+  // 선택된 날짜
+  .rdp-selected:not(.rdp-today),
+  .rdp-selected:not(.rdp-today) .rdp-button {
+    background: #c2e7ff;
+    border-radius: 50%;
+    font-weight: 500;
+  }
+}
