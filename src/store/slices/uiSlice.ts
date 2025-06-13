@@ -1,13 +1,14 @@
+// src/store/slices/uiSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { Notification } from '../../types';
+import type { Notification, CalendarEvent } from '../../types';
 
 interface UiState {
   sidebarOpen: boolean; // 사이드바 열림/닫힘 상태
   eventModalOpen: boolean; // 이벤트 추가/수정 모달 상태
-  eventFormData: Partial<Event> | null; // 모달에서 편집 중인 이벤트 데이터
+  eventFormData: Partial<CalendarEvent> | null; // 모달에서 편집 중인 이벤트 데이터
   mobileView: boolean; // 모바일 뷰 여부
-  theme: 'light' | 'dark'; // 테마
+  theme: 'light' | 'dark'; // 테마 (확장 가능성 고려)
   notifications: Notification[]; // 알림 목록
 }
 
@@ -35,7 +36,10 @@ const uiSlice = createSlice({
     },
 
     // 이벤트 모달 열기
-    openEventModal: (state, action: PayloadAction<Partial<Event> | null>) => {
+    openEventModal: (
+      state,
+      action: PayloadAction<Partial<CalendarEvent> | null>
+    ) => {
       state.eventModalOpen = true;
       state.eventFormData = action.payload;
     },
@@ -47,7 +51,10 @@ const uiSlice = createSlice({
     },
 
     // 이벤트 폼 데이터 업데이트
-    updateEventFormData: (state, action: PayloadAction<Partial<Event>>) => {
+    updateEventFormData: (
+      state,
+      action: PayloadAction<Partial<CalendarEvent>>
+    ) => {
       state.eventFormData = {
         ...state.eventFormData,
         ...action.payload,
@@ -99,7 +106,7 @@ const uiSlice = createSlice({
       state.notifications = [];
     },
 
-    // 오래된 알림 자동 제거
+    // 오래된 알림 자동 제거 (5초 이상 된 알림)
     removeOldNotifications: (state) => {
       const fiveSecondsAgo = Date.now() - 5000;
       state.notifications = state.notifications.filter(
