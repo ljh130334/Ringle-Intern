@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { setMobileView } from './store/slices/uiSlice';
 import CalendarHeader from './components/layout/CalendarHeader';
-import CalendarSidebar from './components/layout/CalendarSidebar';
+import CalendarSidebar from './components/layout/CalendarSidebar/CalendarSidebar';
 
 function App() {
   const dispatch = useAppDispatch();
