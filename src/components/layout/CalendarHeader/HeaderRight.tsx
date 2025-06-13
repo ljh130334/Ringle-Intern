@@ -8,7 +8,7 @@ const HeaderRight: React.FC = () => {
   const { headerView } = useAppSelector((state) => state.ui);
 
   return (
-    <div className="flex items-center px-[6px] flex-shrink-0 overflow-hidden">
+    <div className="flex items-center px-[6px] flex-shrink-0">
       <button
         className="p-2 hover:bg-[#EAECEF] rounded-full transition-colors duration-200 flex-shrink-0"
         aria-label="검색"
