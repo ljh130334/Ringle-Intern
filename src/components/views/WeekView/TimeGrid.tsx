@@ -12,7 +12,15 @@ interface TimeGridProps {
   timeSlots: number[];
   weekEvents: WeekEventData[];
   onTimeSlotClick: (date: Date, hour: number) => void;
-  onEventClick: (event: any, e: React.MouseEvent) => void;
+  onEventClick: (
+    event: {
+      id: string;
+      startTime: string;
+      endTime: string;
+      isAllDay: boolean;
+    },
+    e: React.MouseEvent
+  ) => void;
   formatEventTimeRange: (startTime: string, endTime: string) => string;
 }
 

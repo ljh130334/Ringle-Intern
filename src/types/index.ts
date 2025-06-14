@@ -43,14 +43,6 @@ export interface EventFilters {
   showCompleted: boolean;
 }
 
-// 알림 타입
-export interface Notification {
-  id: string;
-  message: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-  timestamp: number;
-}
-
 // 이벤트 레이아웃 정보 타입
 export interface EventLayout {
   event: CalendarEvent;

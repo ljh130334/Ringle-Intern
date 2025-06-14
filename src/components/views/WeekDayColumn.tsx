@@ -58,7 +58,6 @@ const WeekDayColumn: React.FC<WeekDayColumnProps> = ({
             className="h-12 border-b border-gray-100 hover:bg-gray-50 cursor-pointer relative"
             onClick={() => onTimeSlotClick?.(date, hour)}
           >
-            {/* 시간대별 이벤트들이 여기에 표시됩니다 */}
             {children}
           </div>
         ))}

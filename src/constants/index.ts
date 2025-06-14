@@ -94,9 +94,3 @@ export const CALENDAR_CONFIG = {
   MIN_EVENT_DURATION: 15, // 분
   MAX_EVENTS_PER_DAY: 10,
 };
-
-// 알림 설정
-export const NOTIFICATION_CONFIG = {
-  DURATION: 5000,
-  MAX_NOTIFICATIONS: 5,
-};

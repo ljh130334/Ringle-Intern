@@ -13,7 +13,7 @@ interface CalendarState {
 const initialState: CalendarState = {
   currentDate: new Date().toISOString().split('T')[0],
   selectedDate: new Date().toISOString().split('T')[0],
-  view: 'week', // 기본값 week로 설정
+  view: 'week',
   showWeekends: true,
   firstDayOfWeek: 0, // 일요일 시작
 };

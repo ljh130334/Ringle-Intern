@@ -68,8 +68,6 @@ export const getEventColor = (category?: string): string => {
   if (categoryInfo) {
     return categoryInfo.color;
   }
-
-  // 기본 색상 (파란색)
   return EVENT_COLORS[0].value;
 };
 
@@ -81,7 +79,7 @@ export const getEventBackgroundColor = (category?: string): string => {
   if (categoryInfo) {
     // 메인 색상을 기반으로 연한 배경색 생성
     const mainColor = categoryInfo.color;
-    return mainColor + '20'; // 투명도 20% 적용
+    return mainColor + '20';
   }
 
   return EVENT_COLORS[0].bg;

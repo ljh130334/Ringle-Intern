@@ -33,9 +33,9 @@ const MonthView: React.FC = () => {
     );
   };
 
-  const handleEventClick = (event: React.MouseEvent, eventId: string) => {
+  const handleEventClick = (event: React.MouseEvent, eventId?: string) => {
     event.stopPropagation();
-    // 이벤트 클릭 시 모달 열기 또는 상세 보기
+    console.log('Event ID:', eventId);
   };
 
   return (

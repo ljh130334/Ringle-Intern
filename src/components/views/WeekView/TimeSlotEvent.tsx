@@ -31,7 +31,6 @@ const TimeSlotEvent: React.FC<TimeSlotEventProps> = ({
   const eventBackgroundColor = event.color || '#4285f4';
   const eventTextColor = getContrastTextColor(eventBackgroundColor);
 
-  // 중첩을 고려한 위치와 크기 계산
   const widthPercentage = layout.width * 100;
   const leftPercentage = layout.left * 100;
 

@@ -36,7 +36,7 @@ export const getWeekDays = (date: Date): Date[] => {
 };
 
 /**
- * 현재 월의 모든 날짜 가져오기 (캘린더 표시용)
+ * 현재 월의 모든 날짜 가져오기
  */
 export const getMonthDays = (date: Date): Date[] => {
   const monthStart = startOfMonth(date);
@@ -113,14 +113,14 @@ export const getMonthName = (date: Date): string => {
 };
 
 /**
- * 년월 형식으로 포맷팅 (예: 2024년 1월)
+ * 년월 형식으로 포맷팅 (예: 2025년 1월)
  */
 export const formatYearMonth = (date: Date): string => {
   return `${date.getFullYear()}년 ${getMonthName(date)}`;
 };
 
 /**
- * 날짜 범위 텍스트 생성 (예: 2024년 1월 1일 - 7일)
+ * 날짜 범위 텍스트 생성 (예: 2025년 1월 1일 - 7일)
  */
 export const formatDateRange = (startDate: Date, endDate: Date): string => {
   if (isSameMonth(startDate, endDate)) {

@@ -84,9 +84,7 @@ const WeekCalendarGrid: React.FC<WeekCalendarGridProps> = ({
                     key={hour}
                     className="h-12 border-b border-gray-100 hover:bg-gray-50 cursor-pointer relative"
                     onClick={() => onTimeSlotClick?.(date, hour)}
-                  >
-                    {/* 여기에 시간대별 이벤트들이 표시됩니다 */}
-                  </div>
+                  ></div>
                 ))}
               </div>
             );
