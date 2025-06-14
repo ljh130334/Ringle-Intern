@@ -10,6 +10,7 @@ interface UiState {
   theme: 'light' | 'dark'; // 테마 (확장 가능성 고려)
   notifications: Notification[]; // 알림 목록
   headerView: 'calendar' | 'tasks';
+  showDatePicker: boolean;
 }
 
 const initialState: UiState = {
@@ -20,6 +21,7 @@ const initialState: UiState = {
   theme: 'light',
   notifications: [],
   headerView: 'calendar',
+  showDatePicker: false,
 };
 
 const uiSlice = createSlice({
@@ -118,6 +120,16 @@ const uiSlice = createSlice({
     setHeaderView: (state, action: PayloadAction<'calendar' | 'tasks'>) => {
       state.headerView = action.payload;
     },
+
+    // 데이트 피커 토글
+    toggleDatePicker: (state) => {
+      state.showDatePicker = !state.showDatePicker;
+    },
+
+    // 데이트 피커 표시 상태 설정
+    setShowDatePicker: (state, action: PayloadAction<boolean>) => {
+      state.showDatePicker = action.payload;
+    },
   },
 });
 
@@ -134,6 +146,8 @@ export const {
   clearNotifications,
   removeOldNotifications,
   setHeaderView,
+  toggleDatePicker,
+  setShowDatePicker,
 } = uiSlice.actions;
 
 export default uiSlice.reducer;

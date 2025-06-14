@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import { setMobileView } from './store/slices/uiSlice';
+import { openEventModal } from './store/slices/uiSlice';
 import { setEvents } from './store/slices/eventsSlice';
 import CalendarHeader from './components/layout/CalendarHeader';
 import SidebarLayout from './components/layout/SidebarLayout';
 import CalendarContent from './components/layout/CalendarContent';
 import FloatingCreateButton from './components/ui/FloatingCreateButton';
+import EventModal from './components/ui/EventModal';
 import { initializeSampleEvents } from './utils/sampleEvents';
 
 function App() {
@@ -26,7 +28,7 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch]);
 
-  // 샘플 이벤트 데이터 초기화
+  // 샘플 이벤트 데이터 초기화 (개발용)
   useEffect(() => {
     // 이벤트가 없을 때만 샘플 데이터 추가
     if (events.length === 0) {
@@ -36,8 +38,16 @@ function App() {
   }, [dispatch, currentDate, events.length]);
 
   const handleCreateEvent = () => {
-    console.log('플로팅 만들기 버튼 클릭됨');
-    // TODO: 이벤트 생성 모달 열기
+    // 오늘 날짜로 기본 설정하여 이벤트 모달 열기
+    const today = new Date().toISOString().split('T')[0];
+    dispatch(
+      openEventModal({
+        date: today,
+        startTime: '09:00',
+        endTime: '10:00',
+        isAllDay: false,
+      })
+    );
   };
 
   return (
@@ -49,6 +59,8 @@ function App() {
         <FloatingCreateButton onClick={handleCreateEvent} />
         <CalendarContent />
       </div>
+
+      <EventModal />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { setCurrentDate } from '../../../store/slices/calendarSlice';
+import { setShowDatePicker } from '../../../store/slices/uiSlice';
 import { dateToString } from '../../../utils/dateUtils';
 import 'react-day-picker/dist/style.css';
 import './CalendarSidebar.scss';
@@ -11,6 +12,7 @@ import './CalendarSidebar.scss';
 const CalendarSidebar: React.FC = () => {
   const dispatch = useAppDispatch();
   const { currentDate } = useAppSelector((state) => state.calendar);
+  const { showDatePicker } = useAppSelector((state) => state.ui);
 
   const today = new Date();
   const selectedDate = new Date(currentDate);
@@ -27,6 +29,10 @@ const CalendarSidebar: React.FC = () => {
     if (date) {
       const dateString = format(date, 'yyyy-MM-dd');
       dispatch(setCurrentDate(dateString));
+
+      if (showDatePicker) {
+        dispatch(setShowDatePicker(false));
+      }
     }
   };
 
@@ -43,7 +49,9 @@ const CalendarSidebar: React.FC = () => {
         </button>
       </div>
 
-      <div className="pl-[19px] pr-[27px] mb-6 pt-[6px]">
+      <div
+        className={`pl-[19px] pr-[27px] mb-6 pt-[6px] ${showDatePicker ? 'ring-2 ring-blue-500 rounded-lg bg-blue-50' : ''}`}
+      >
         <div>
           <DayPicker
             mode="single"
@@ -55,7 +63,7 @@ const CalendarSidebar: React.FC = () => {
               formatCaption: (date) =>
                 format(date, 'yyyy년 M월', { locale: ko }),
             }}
-            className="custom-day-picker"
+            className={`custom-day-picker ${showDatePicker ? 'highlight-picker' : ''}`}
             showOutsideDays
             fixedWeeks
           />
