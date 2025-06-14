@@ -7,7 +7,7 @@ import CalendarHeader from './components/layout/CalendarHeader';
 import SidebarLayout from './components/layout/SidebarLayout';
 import CalendarContent from './components/layout/CalendarContent';
 import FloatingCreateButton from './components/ui/FloatingCreateButton';
-import EventModal from './components/ui/EventModal';
+import EventModal from './components/ui/EventModal/EventModal';
 import { initializeSampleEvents } from './utils/sampleEvents';
 
 function App() {
