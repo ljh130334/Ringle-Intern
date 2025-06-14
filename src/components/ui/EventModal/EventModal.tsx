@@ -5,9 +5,15 @@ import {
   addEvent,
   updateEvent,
   deleteEvent,
+  addRecurringEvents,
 } from '../../../store/slices/eventsSlice';
 import { generateEventId } from '../../../utils/eventUtils';
+import {
+  generateRecurringEvents,
+  createDefaultRecurrence,
+} from '../../../utils/recurringEventUtils';
 import type { CalendarEvent } from '../../../types';
+import type { RecurrenceType } from '../../../utils/recurringEventUtils';
 import EventFormHeader from './EventFormHeader';
 import EventFormTabs from './EventFormTabs';
 import EventTimeSection from './EventTimeSection';
@@ -24,6 +30,7 @@ const EventModal: React.FC = () => {
     endTime: '10:00',
     isAllDay: false,
     hasRepeat: false,
+    repeatType: 'weekly' as RecurrenceType,
   });
 
   // UI 상태
@@ -40,7 +47,8 @@ const EventModal: React.FC = () => {
         startTime: eventFormData.startTime || '09:00',
         endTime: eventFormData.endTime || '10:00',
         isAllDay: eventFormData.isAllDay || false,
-        hasRepeat: false,
+        hasRepeat: !!eventFormData.recurrence,
+        repeatType: eventFormData.recurrence?.type || 'weekly',
       });
     }
   }, [eventModalOpen, eventFormData]);
@@ -54,6 +62,7 @@ const EventModal: React.FC = () => {
       endTime: '10:00',
       isAllDay: false,
       hasRepeat: false,
+      repeatType: 'weekly',
     });
     setIsTimeExpanded(false);
     setShowDatePicker(false);
@@ -77,7 +86,7 @@ const EventModal: React.FC = () => {
       return;
     }
 
-    const newEvent: CalendarEvent = {
+    const baseEvent: CalendarEvent = {
       id: eventFormData?.id || generateEventId(),
       title: formData.title.trim(),
       description: '',
@@ -87,12 +96,27 @@ const EventModal: React.FC = () => {
       color: '#4285f4',
       isAllDay: formData.isAllDay,
       category: 'personal',
+      recurrence: formData.hasRepeat
+        ? createDefaultRecurrence(formData.repeatType)
+        : undefined,
     };
 
     if (eventFormData?.id) {
-      dispatch(updateEvent(newEvent));
+      // 기존 이벤트 수정
+      dispatch(updateEvent(baseEvent));
     } else {
-      dispatch(addEvent(newEvent));
+      // 새 이벤트 생성
+      if (formData.hasRepeat) {
+        // 반복 일정 생성
+        const recurringEvents = generateRecurringEvents(
+          baseEvent,
+          createDefaultRecurrence(formData.repeatType)
+        );
+        dispatch(addRecurringEvents(recurringEvents));
+      } else {
+        // 단일 이벤트 생성
+        dispatch(addEvent(baseEvent));
+      }
     }
 
     handleClose();
@@ -117,6 +141,7 @@ const EventModal: React.FC = () => {
     setShowDatePicker(!showDatePicker);
   };
 
+  // DayPicker에서 날짜 선택 핸들러
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       const year = date.getFullYear();

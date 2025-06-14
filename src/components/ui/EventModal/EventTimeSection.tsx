@@ -9,6 +9,7 @@ interface EventTimeSectionProps {
     endTime: string;
     isAllDay: boolean;
     hasRepeat: boolean;
+    repeatType: 'daily' | 'weekly' | 'monthly' | 'yearly';
   };
   isTimeExpanded: boolean;
   showDatePicker: boolean;
@@ -73,6 +74,22 @@ const EventTimeSection: React.FC<EventTimeSectionProps> = ({
     }
   };
 
+  // 반복 텍스트 생성 함수
+  const getRepeatText = (repeatType: string) => {
+    switch (repeatType) {
+      case 'daily':
+        return '매일';
+      case 'weekly':
+        return '매주';
+      case 'monthly':
+        return '매월';
+      case 'yearly':
+        return '매년';
+      default:
+        return '반복 안함';
+    }
+  };
+
   return (
     <div className="mb-4">
       {!isTimeExpanded ? (
@@ -104,7 +121,12 @@ const EventTimeSection: React.FC<EventTimeSectionProps> = ({
                 ? ''
                 : `${formatTimeDisplay(formData.startTime)} - ${formatTimeDisplay(formData.endTime)}`}
             </div>
-            <div className="text-xs text-gray-500">시간대 • 반복 안함</div>
+            <div className="text-xs text-gray-500">
+              시간대 •{' '}
+              {formData.hasRepeat
+                ? getRepeatText(formData.repeatType)
+                : '반복 안함'}
+            </div>
           </div>
         </div>
       ) : (
@@ -184,13 +206,18 @@ const EventTimeSection: React.FC<EventTimeSectionProps> = ({
                 </div>
               </div>
 
-              {/* 반복 안함 드롭다운 */}
               <div className="relative">
                 <select
-                  value={formData.hasRepeat ? 'weekly' : 'none'}
-                  onChange={(e) =>
-                    onInputChange('hasRepeat', e.target.value !== 'none')
-                  }
+                  value={formData.hasRepeat ? formData.repeatType : 'none'}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === 'none') {
+                      onInputChange('hasRepeat', false);
+                    } else {
+                      onInputChange('hasRepeat', true);
+                      onInputChange('repeatType', value);
+                    }
+                  }}
                   className="bg-[#dde3ea] hover:bg-[#CED3DA] text-[#1f1f1f] px-4 py-2 rounded-md text-[14px] border-0 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer pr-8"
                 >
                   <option value="none">반복 안함</option>

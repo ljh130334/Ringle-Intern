@@ -18,6 +18,7 @@ export interface CalendarEvent {
     type: 'daily' | 'weekly' | 'monthly' | 'yearly';
     interval: number;
     endDate?: string;
+    count?: number;
   };
 }
 

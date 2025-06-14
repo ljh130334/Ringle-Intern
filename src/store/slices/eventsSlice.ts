@@ -41,6 +41,11 @@ const eventsSlice = createSlice({
       state.error = null;
     },
 
+    // 반복 이벤트들을 일괄 추가
+    addRecurringEvents: (state, action: PayloadAction<CalendarEvent[]>) => {
+      state.events.push(...action.payload);
+    },
+
     // 이벤트 수정
     updateEvent: (state, action: PayloadAction<CalendarEvent>) => {
       const index = state.events.findIndex(
@@ -68,6 +73,30 @@ const eventsSlice = createSlice({
         }
       } else {
         state.error = '삭제할 이벤트를 찾을 수 없습니다.';
+      }
+    },
+
+    // 반복 이벤트 삭제 (같은 recurrence ID를 가진 모든 이벤트 삭제)
+    deleteRecurringEvents: (state, action: PayloadAction<string>) => {
+      const eventToDelete = state.events.find(
+        (event) => event.id === action.payload
+      );
+      if (eventToDelete && eventToDelete.recurrence) {
+        // 같은 제목과 시간을 가진 반복 이벤트들을 모두 삭제
+        state.events = state.events.filter(
+          (event) =>
+            !(
+              event.title === eventToDelete.title &&
+              event.startTime === eventToDelete.startTime &&
+              event.endTime === eventToDelete.endTime &&
+              event.recurrence
+            )
+        );
+      } else {
+        // 단일 이벤트 삭제
+        state.events = state.events.filter(
+          (event) => event.id !== action.payload
+        );
       }
     },
 
@@ -119,13 +148,16 @@ export const {
   setLoading,
   setError,
   addEvent,
+  addRecurringEvents,
   updateEvent,
   deleteEvent,
+  deleteRecurringEvents,
   setEvents,
   selectEvent,
   toggleCategoryFilter,
   toggleShowCompleted,
   resetFilters,
+  setFilteredEventsByDate,
 } = eventsSlice.actions;
 
 export default eventsSlice.reducer;
