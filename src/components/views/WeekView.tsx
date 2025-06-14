@@ -5,6 +5,7 @@ import { openEventModal } from '../../store/slices/uiSlice';
 import { deleteEvent } from '../../store/slices/eventsSlice';
 import { getWeekDays, formatDate, isTodayDate } from '../../utils/dateUtils';
 import { getEventsByDate, sortEventsByTime } from '../../utils/eventUtils';
+import { getContrastTextColor } from '../../utils/colorUtils';
 
 const WeekView: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -117,29 +118,35 @@ const WeekView: React.FC = () => {
   };
 
   // 종일 이벤트 컴포넌트
-  const AllDayEvent: React.FC<{ event: Event }> = ({ event }) => (
-    <div
-      className="text-white text-xs px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-opacity mb-1 truncate"
-      style={{
-        backgroundColor: event.color || '#4285f4',
-        fontSize: '11px',
-        lineHeight: '16px',
-        minHeight: '20px',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-      onClick={(e) => handleEventClick(event, e)}
-      title={event.title}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        if (window.confirm('이벤트를 삭제하시겠습니까?')) {
-          dispatch(deleteEvent(event.id));
-        }
-      }}
-    >
-      {event.title}
-    </div>
-  );
+  const AllDayEvent: React.FC<{ event: Event }> = ({ event }) => {
+    const backgroundColor = event.color || '#4285f4';
+    const textColor = getContrastTextColor(backgroundColor);
+
+    return (
+      <div
+        className="text-xs px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-opacity mb-1 truncate"
+        style={{
+          backgroundColor,
+          color: textColor,
+          fontSize: '11px',
+          lineHeight: '16px',
+          minHeight: '20px',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+        onClick={(e) => handleEventClick(event, e)}
+        title={event.title}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          if (window.confirm('이벤트를 삭제하시겠습니까?')) {
+            dispatch(deleteEvent(event.id));
+          }
+        }}
+      >
+        {event.title}
+      </div>
+    );
+  };
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -254,12 +261,17 @@ const WeekView: React.FC = () => {
                         );
                         const topOffset = (eventStartMin / 60) * 48;
 
+                        const eventBackgroundColor = event.color || '#4285f4';
+                        const eventTextColor =
+                          getContrastTextColor(eventBackgroundColor);
+
                         return (
                           <div
                             key={event.id}
                             className="absolute left-0 right-3 rounded px-2 pr-0 py-1 text-xs font-medium text-white shadow-sm cursor-pointer hover:shadow-md z-10"
                             style={{
-                              backgroundColor: event.color || '#4285f4',
+                              backgroundColor: eventBackgroundColor,
+                              color: eventTextColor,
                               height: `${heightInPixels}px`,
                               top: `${topOffset}px`,
                               marginLeft: `${eventIndex * 2}px`,

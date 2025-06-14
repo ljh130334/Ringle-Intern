@@ -17,6 +17,7 @@ import type { RecurrenceType } from '../../../utils/recurringEventUtils';
 import EventFormHeader from './EventFormHeader';
 import EventFormTabs from './EventFormTabs';
 import EventTimeSection from './EventTimeSection';
+import { getRandomEventColor } from '../../../utils/colorUtils';
 
 const EventModal: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -93,7 +94,7 @@ const EventModal: React.FC = () => {
       date: formData.date,
       startTime: formData.isAllDay ? '00:00' : formData.startTime,
       endTime: formData.isAllDay ? '23:59' : formData.endTime,
-      color: '#4285f4',
+      color: eventFormData?.color || getRandomEventColor(),
       isAllDay: formData.isAllDay,
       category: 'personal',
       recurrence: formData.hasRepeat
