@@ -33,8 +33,11 @@ const CalendarSidebar: React.FC = () => {
   return (
     <div className="w-full bg-[#F8FAFD] h-full overflow-y-auto">
       <div className="px-4 pt-3 pb-4">
-        <button className="flex items-center gap-3 pl-4 pr-3 py-4 bg-white rounded-[20px] shadow-md hover:shadow-lg hover:bg-[#EDF1FC] transition-shadow duration-200 text-[#1f1f1f] w-auto text-left">
-          <img src="/icons/plus.svg" alt="검색" className="w-6 h-6" />
+        <button
+          className="flex items-center gap-3 pl-4 pr-3 py-4 bg-white rounded-[16px] shadow-lg hover:shadow-xl 
+                   border border-gray-200 hover:bg-[#EDF1FC] transition-shadow duration-200 text-[#1f1f1f] w-auto text-left"
+        >
+          <img src="/icons/plus.svg" alt="추가" className="w-6 h-6" />
           <span className="text-sm font-medium">만들기</span>
           <img src="/icons/arrow-down.svg" alt="검색" className="w-5 h-5" />
         </button>
