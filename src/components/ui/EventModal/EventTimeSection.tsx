@@ -31,9 +31,11 @@ const EventTimeSection: React.FC<EventTimeSectionProps> = ({
   const formatDateDisplay = (dateString: string) => {
     if (!dateString) return '';
 
-    const date = new Date(dateString);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+
+    const monthDisplay = date.getMonth() + 1;
+    const dayDisplay = date.getDate();
     const weekdays = [
       '일요일',
       '월요일',
@@ -45,7 +47,7 @@ const EventTimeSection: React.FC<EventTimeSectionProps> = ({
     ];
     const weekday = weekdays[date.getDay()];
 
-    return `${month}월 ${day}일 (${weekday})`;
+    return `${monthDisplay}월 ${dayDisplay}일 (${weekday})`;
   };
 
   // 시간 포맷팅 (오전 4:30 형식)

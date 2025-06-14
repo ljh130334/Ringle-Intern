@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { closeEventModal } from '../../../store/slices/uiSlice';
 import { addEvent, updateEvent } from '../../../store/slices/eventsSlice';
@@ -110,7 +109,11 @@ const EventModal: React.FC = () => {
   // DayPicker에서 날짜 선택 핸들러
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
-      const dateString = format(date, 'yyyy-MM-dd');
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
+      const dateString = `${year}-${month}-${day}`;
+
       handleInputChange('date', dateString);
       setShowDatePicker(false);
     }

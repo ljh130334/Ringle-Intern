@@ -21,9 +21,11 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
   const formatDateDisplay = (dateString: string) => {
     if (!dateString) return '';
 
-    const date = new Date(dateString);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+
+    const monthDisplay = date.getMonth() + 1;
+    const dayDisplay = date.getDate();
     const weekdays = [
       '일요일',
       '월요일',
@@ -35,7 +37,13 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
     ];
     const weekday = weekdays[date.getDay()];
 
-    return `${month}월 ${day}일 (${weekday})`;
+    return `${monthDisplay}월 ${dayDisplay}일 (${weekday})`;
+  };
+
+  const getSelectedDateObject = () => {
+    if (!selectedDate) return undefined;
+    const [year, month, day] = selectedDate.split('-').map(Number);
+    return new Date(year, month - 1, day);
   };
 
   return (
@@ -56,7 +64,7 @@ const DatePickerComponent: React.FC<DatePickerComponentProps> = ({
         <div className="absolute top-10 left-0 z-[100] bg-white rounded-[16px] shadow-2xl border border-gray-200 p-4">
           <DayPicker
             mode="single"
-            selected={selectedDate ? new Date(selectedDate) : undefined}
+            selected={getSelectedDateObject()}
             onSelect={onDateSelect}
             today={new Date()}
             locale={ko}

@@ -2,6 +2,16 @@ import type { CalendarEvent } from '../types';
 import { EVENT_CATEGORIES, EVENT_COLORS } from '../constants';
 
 /**
+ * Date 객체를 YYYY-MM-DD 형식으로 변환
+ */
+const formatDateToString = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+/**
  * 고유한 이벤트 ID 생성
  */
 export const generateEventId = (): string => {
@@ -15,7 +25,7 @@ export const getEventsByDate = (
   events: CalendarEvent[],
   date: Date
 ): CalendarEvent[] => {
-  const targetDateString = date.toISOString().split('T')[0];
+  const targetDateString = formatDateToString(date);
   return events.filter((event) => event.date === targetDateString);
 };
 
@@ -27,8 +37,8 @@ export const getEventsByDateRange = (
   startDate: Date,
   endDate: Date
 ): CalendarEvent[] => {
-  const startStr = startDate.toISOString().split('T')[0];
-  const endStr = endDate.toISOString().split('T')[0];
+  const startStr = formatDateToString(startDate);
+  const endStr = formatDateToString(endDate);
 
   return events.filter(
     (event) => event.date >= startStr && event.date <= endStr
@@ -170,7 +180,7 @@ export const getEventsAtTime = (
   date: Date,
   hour: number
 ): CalendarEvent[] => {
-  const dateString = date.toISOString().split('T')[0];
+  const dateString = formatDateToString(date);
 
   return events.filter((event) => {
     if (event.date !== dateString) return false;
