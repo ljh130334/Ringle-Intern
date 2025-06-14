@@ -28,7 +28,7 @@ const FloatingCreateButton: React.FC<FloatingCreateButtonProps> = ({
         onClick={handleClick}
         className="w-14 h-14 bg-white rounded-[16px] shadow-lg hover:shadow-xl 
                    border border-gray-200 flex items-center justify-center
-                   transition-all duration-300 ease-out hover:scale-105
+                   transition-all duration-300 ease-out hover:bg-[#EDF1FC]
                    group"
         aria-label="새 이벤트 만들기"
         title="새 이벤트 만들기"
