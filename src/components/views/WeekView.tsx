@@ -58,6 +58,34 @@ const WeekView: React.FC = () => {
     return `오후 ${hour - 12}시`;
   };
 
+  // 이벤트용 시간 포맷팅 함수 (한국어 형식)
+  const formatEventTime = (timeString: string): string => {
+    const [hour, minute] = timeString.split(':').map(Number);
+
+    if (hour === 0) {
+      return minute === 0
+        ? '오전 12시'
+        : `오전 12:${minute.toString().padStart(2, '0')}`;
+    } else if (hour < 12) {
+      return minute === 0
+        ? `오전 ${hour}시`
+        : `오전 ${hour}:${minute.toString().padStart(2, '0')}`;
+    } else if (hour === 12) {
+      return minute === 0
+        ? '오후 12시'
+        : `오후 12:${minute.toString().padStart(2, '0')}`;
+    } else {
+      return minute === 0
+        ? `오후 ${hour - 12}시`
+        : `오후 ${hour - 12}:${minute.toString().padStart(2, '0')}`;
+    }
+  };
+
+  // 이벤트 시간 범위 포맷팅
+  const formatEventTimeRange = (startTime: string, endTime: string): string => {
+    return `${formatEventTime(startTime)}~${formatEventTime(endTime)}`;
+  };
+
   // 이벤트가 특정 시간대에 표시되는지 확인
   interface Event {
     id: string;
@@ -179,7 +207,7 @@ const WeekView: React.FC = () => {
                         return (
                           <div
                             key={event.id}
-                            className="absolute left-1 right-1 rounded px-2 py-1 text-xs font-medium text-white shadow-sm cursor-pointer hover:shadow-md z-10"
+                            className="absolute left-0 right-3 rounded px-2 pr-0 py-1 text-xs font-medium text-white shadow-sm cursor-pointer hover:shadow-md z-10"
                             style={{
                               backgroundColor: event.color || '#4285f4',
                               height: `${heightInPixels}px`,
@@ -210,7 +238,10 @@ const WeekView: React.FC = () => {
                             </div>
                             {!event.isAllDay && (
                               <div className="text-xs opacity-90">
-                                {event.startTime} - {event.endTime}
+                                {formatEventTimeRange(
+                                  event.startTime,
+                                  event.endTime
+                                )}
                               </div>
                             )}
                           </div>
