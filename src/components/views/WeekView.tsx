@@ -50,6 +50,17 @@ const WeekView: React.FC = () => {
     );
   };
 
+  // 이벤트 클릭 핸들러
+  const handleEventClick = (event: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(
+      openEventModal({
+        ...event,
+        mode: 'edit',
+      })
+    );
+  };
+
   // 시간 포맷팅 함수 (한국어 형식)
   const formatTimeLabel = (hour: number): string => {
     if (hour === 0) return '';
@@ -111,10 +122,33 @@ const WeekView: React.FC = () => {
     });
   };
 
+  // 종일 이벤트 컴포넌트
+  const AllDayEvent: React.FC<{ event: Event }> = ({ event }) => (
+    <div
+      className="text-white text-xs px-2 py-1 rounded-sm cursor-pointer hover:opacity-80 transition-opacity mb-1 truncate"
+      style={{
+        backgroundColor: event.color || '#4285f4',
+        fontSize: '11px',
+        lineHeight: '14px',
+        minHeight: '18px',
+      }}
+      onClick={(e) => handleEventClick(event, e)}
+      title={event.title}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        if (window.confirm('이벤트를 삭제하시겠습니까?')) {
+          dispatch(deleteEvent(event.id));
+        }
+      }}
+    >
+      {event.title}
+    </div>
+  );
+
   return (
     <div className="h-full flex flex-col bg-white">
       {/* 주간 헤더 */}
-      <div className="flex border-b border-gray-200 bg-white sticky top-0 z-10 pr-[15px]">
+      <div className="flex bg-white sticky top-0 z-10 pr-[15px]">
         <div className="w-20 flex-shrink-0 p-3 pb-1 flex items-end justify-center">
           <div className="text-[11px] text-[#444746]">GMT+09</div>
         </div>
@@ -152,6 +186,25 @@ const WeekView: React.FC = () => {
                   {date.getDate()}
                 </div>
               </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 종일 이벤트 영역 */}
+      <div className="flex border-b border-[#dadce0] border-t-0 h-5 pr-[15px]">
+        <div className="w-20 flex-shrink-0"></div>
+        {weekEvents.map(({ date, events: dayEvents }) => {
+          const allDayEvents = dayEvents.filter((event) => event.isAllDay);
+
+          return (
+            <div
+              key={formatDate(date)}
+              className="flex-1 border-l border-[#dadce0] min-h-[20px]"
+            >
+              {allDayEvents.map((event) => (
+                <AllDayEvent key={event.id} event={event} />
+              ))}
             </div>
           );
         })}
@@ -214,16 +267,7 @@ const WeekView: React.FC = () => {
                               top: `${topOffset}px`,
                               marginLeft: `${eventIndex * 2}px`,
                             }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (e.detail === 2) {
-                                if (
-                                  window.confirm('이벤트를 삭제하시겠습니까?')
-                                ) {
-                                  dispatch(deleteEvent(event.id));
-                                }
-                              }
-                            }}
+                            onClick={(e) => handleEventClick(event, e)}
                             onContextMenu={(e) => {
                               e.preventDefault();
                               if (
