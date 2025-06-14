@@ -239,3 +239,180 @@ export const duplicateEvent = (
     date: newDate,
   };
 };
+
+/**
+ * 시간을 분 단위로 변환
+ */
+const timeToMinutes = (timeString: string): number => {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  return hours * 60 + minutes;
+};
+
+/**
+ * 두 이벤트가 시간적으로 겹치는지 확인 (정확한 분 단위 계산)
+ */
+export const doEventsOverlap = (
+  event1: CalendarEvent,
+  event2: CalendarEvent
+): boolean => {
+  if (event1.date !== event2.date) return false;
+  if (event1.isAllDay || event2.isAllDay) return false;
+
+  const start1 = timeToMinutes(event1.startTime);
+  const end1 = timeToMinutes(event1.endTime);
+  const start2 = timeToMinutes(event2.startTime);
+  const end2 = timeToMinutes(event2.endTime);
+
+  return start1 < end2 && start2 < end1;
+};
+
+/**
+ * 이벤트 레이아웃 정보 인터페이스
+ */
+export interface EventLayout {
+  event: CalendarEvent;
+  column: number; // 몇 번째 열에 위치할지
+  totalColumns: number; // 전체 열 개수
+  width: number; // 너비 비율 (0-1)
+  left: number; // 왼쪽 위치 비율 (0-1)
+}
+
+/**
+ * 이벤트들의 중첩 그룹을 찾기
+ */
+export const findOverlapGroups = (
+  events: CalendarEvent[]
+): CalendarEvent[][] => {
+  const groups: CalendarEvent[][] = [];
+  const processed = new Set<string>();
+
+  for (const event of events) {
+    if (processed.has(event.id)) continue;
+
+    const group = [event];
+    processed.add(event.id);
+
+    // 현재 이벤트와 겹치는 모든 이벤트 찾기
+    for (const otherEvent of events) {
+      if (processed.has(otherEvent.id)) continue;
+
+      // 그룹 내 어떤 이벤트와라도 겹치면 그룹에 추가
+      if (group.some((groupEvent) => doEventsOverlap(groupEvent, otherEvent))) {
+        group.push(otherEvent);
+        processed.add(otherEvent.id);
+      }
+    }
+
+    // 시작 시간 순으로 정렬
+    group.sort((a, b) => a.startTime.localeCompare(b.startTime));
+    groups.push(group);
+  }
+
+  return groups;
+};
+
+/**
+ * 중첩된 이벤트들의 레이아웃 계산
+ */
+export const calculateEventLayouts = (
+  events: CalendarEvent[]
+): EventLayout[] => {
+  if (events.length === 0) return [];
+  if (events.length === 1) {
+    return [
+      {
+        event: events[0],
+        column: 0,
+        totalColumns: 1,
+        width: 1,
+        left: 0,
+      },
+    ];
+  }
+
+  const overlapGroups = findOverlapGroups(events);
+  const layouts: EventLayout[] = [];
+
+  for (const group of overlapGroups) {
+    if (group.length === 1) {
+      // 겹치지 않는 단일 이벤트
+      layouts.push({
+        event: group[0],
+        column: 0,
+        totalColumns: 1,
+        width: 1,
+        left: 0,
+      });
+    } else {
+      // 겹치는 이벤트들의 레이아웃 계산
+      const groupLayouts = calculateGroupLayout(group);
+      layouts.push(...groupLayouts);
+    }
+  }
+
+  return layouts;
+};
+
+/**
+ * 겹치는 이벤트 그룹의 레이아웃 계산
+ */
+const calculateGroupLayout = (group: CalendarEvent[]): EventLayout[] => {
+  const layouts: EventLayout[] = [];
+  const columns: CalendarEvent[][] = [];
+
+  // 시간 순으로 정렬된 그룹에서 각 이벤트를 적절한 열에 배치
+  for (const event of group) {
+    let assignedColumn = -1;
+
+    // 기존 열들을 확인하여 겹치지 않는 열 찾기
+    for (let i = 0; i < columns.length; i++) {
+      const columnEvents = columns[i];
+      const canPlaceInColumn = columnEvents.every(
+        (columnEvent) => !doEventsOverlap(event, columnEvent)
+      );
+
+      if (canPlaceInColumn) {
+        assignedColumn = i;
+        break;
+      }
+    }
+
+    // 적절한 열이 없으면 새 열 생성
+    if (assignedColumn === -1) {
+      assignedColumn = columns.length;
+      columns.push([]);
+    }
+
+    columns[assignedColumn].push(event);
+  }
+
+  const totalColumns = columns.length;
+
+  // 각 이벤트의 레이아웃 정보 계산
+  for (let columnIndex = 0; columnIndex < columns.length; columnIndex++) {
+    for (const event of columns[columnIndex]) {
+      layouts.push({
+        event,
+        column: columnIndex,
+        totalColumns,
+        width: 1 / totalColumns,
+        left: columnIndex / totalColumns,
+      });
+    }
+  }
+
+  return layouts;
+};
+
+/**
+ * 특정 날짜의 이벤트들에 대한 레이아웃 정보 가져오기
+ */
+export const getEventLayoutsForDate = (
+  events: CalendarEvent[],
+  date: Date
+): EventLayout[] => {
+  const dayEvents = getEventsByDate(events, date).filter(
+    (event) => !event.isAllDay
+  );
+  return calculateEventLayouts(dayEvents);
+};

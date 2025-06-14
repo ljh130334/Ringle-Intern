@@ -50,3 +50,12 @@ export interface Notification {
   type: 'success' | 'error' | 'warning' | 'info';
   timestamp: number;
 }
+
+// 이벤트 레이아웃 정보 타입
+export interface EventLayout {
+  event: CalendarEvent;
+  column: number; // 몇 번째 열에 위치할지 (0부터 시작)
+  totalColumns: number; // 전체 열 개수
+  width: number; // 너비 비율 (0-1)
+  left: number; // 왼쪽 위치 비율 (0-1)
+}

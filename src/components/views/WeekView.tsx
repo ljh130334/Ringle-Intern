@@ -4,8 +4,13 @@ import { setSelectedDate } from '../../store/slices/calendarSlice';
 import { openEventModal } from '../../store/slices/uiSlice';
 import { deleteEvent } from '../../store/slices/eventsSlice';
 import { getWeekDays, formatDate, isTodayDate } from '../../utils/dateUtils';
-import { getEventsByDate, sortEventsByTime } from '../../utils/eventUtils';
+import {
+  getEventsByDate,
+  sortEventsByTime,
+  getEventLayoutsForDate,
+} from '../../utils/eventUtils';
 import { getContrastTextColor } from '../../utils/colorUtils';
+import type { EventLayout } from '../../types';
 
 const WeekView: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -15,18 +20,21 @@ const WeekView: React.FC = () => {
   const currentDateObj = new Date(currentDate);
   const weekDays = getWeekDays(currentDateObj);
 
-  // 시간대 배열 생성 (1시부터 23시까지)
+  // 시간대 배열 생성 (0시부터 23시까지)
   const timeSlots = useMemo(() => {
     return Array.from({ length: 24 }, (_, hour) => hour);
   }, []);
 
-  // 각 날짜별 이벤트 가져오기
+  // 각 날짜별 이벤트와 레이아웃 정보 가져오기
   const weekEvents = useMemo(() => {
     return weekDays.map((date) => {
       const dayEvents = getEventsByDate(events, date);
+      const eventLayouts = getEventLayoutsForDate(events, date);
+
       return {
         date,
         events: sortEventsByTime(dayEvents),
+        eventLayouts,
       };
     });
   }, [weekDays, events]);
@@ -102,8 +110,12 @@ const WeekView: React.FC = () => {
     color?: string;
   }
 
-  const getEventsForTimeSlot = (dayEvents: Event[], hour: number) => {
-    return dayEvents.filter((event) => {
+  const getEventLayoutsForTimeSlot = (
+    eventLayouts: EventLayout[],
+    hour: number
+  ) => {
+    return eventLayouts.filter((layout) => {
+      const event = layout.event;
       if (event.isAllDay) return false;
 
       const eventStartHour = parseInt(event.startTime.split(':')[0]);
@@ -229,8 +241,11 @@ const WeekView: React.FC = () => {
               </div>
 
               {/* 각 날짜별 시간 슬롯 */}
-              {weekEvents.map(({ date, events: dayEvents }) => {
-                const eventsInSlot = getEventsForTimeSlot(dayEvents, hour);
+              {weekEvents.map(({ date, eventLayouts }) => {
+                const layoutsInSlot = getEventLayoutsForTimeSlot(
+                  eventLayouts,
+                  hour
+                );
 
                 return (
                   <div
@@ -238,7 +253,8 @@ const WeekView: React.FC = () => {
                     className="flex-1 relative border-l border-b border-[#dadce0] min-h-[48px] cursor-pointer"
                     onClick={() => handleTimeSlotClick(date, hour)}
                   >
-                    {eventsInSlot.map((event, eventIndex) => {
+                    {layoutsInSlot.map((layout) => {
+                      const event = layout.event;
                       const eventStartHour = parseInt(
                         event.startTime.split(':')[0]
                       );
@@ -250,6 +266,7 @@ const WeekView: React.FC = () => {
                       );
                       const eventEndMin = parseInt(event.endTime.split(':')[1]);
 
+                      // 이벤트가 이 시간에 시작하는 경우에만 렌더링
                       if (eventStartHour === hour) {
                         const durationInMinutes =
                           eventEndHour * 60 +
@@ -265,16 +282,22 @@ const WeekView: React.FC = () => {
                         const eventTextColor =
                           getContrastTextColor(eventBackgroundColor);
 
+                        // 중첩을 고려한 위치와 크기 계산
+                        const widthPercentage = layout.width * 100;
+                        const leftPercentage = layout.left * 100;
+
                         return (
                           <div
                             key={event.id}
-                            className="absolute left-0 right-3 rounded px-2 pr-0 py-1 text-xs font-medium text-white shadow-sm cursor-pointer hover:shadow-md z-10"
+                            className="absolute rounded px-2 py-1 text-xs font-medium shadow-sm cursor-pointer hover:shadow-md z-10"
                             style={{
                               backgroundColor: eventBackgroundColor,
                               color: eventTextColor,
                               height: `${heightInPixels}px`,
                               top: `${topOffset}px`,
-                              marginLeft: `${eventIndex * 2}px`,
+                              left: `${leftPercentage}%`,
+                              width: `${widthPercentage - 2}%`,
+                              minWidth: '60px',
                             }}
                             onClick={(e) => handleEventClick(event, e)}
                             onContextMenu={(e) => {
@@ -286,11 +309,11 @@ const WeekView: React.FC = () => {
                               }
                             }}
                           >
-                            <div className="truncate font-medium">
+                            <div className="truncate font-medium text-xs leading-tight">
                               {event.title}
                             </div>
-                            {!event.isAllDay && (
-                              <div className="text-xs opacity-90">
+                            {!event.isAllDay && heightInPixels > 30 && (
+                              <div className="text-xs opacity-90 leading-tight">
                                 {formatEventTimeRange(
                                   event.startTime,
                                   event.endTime
