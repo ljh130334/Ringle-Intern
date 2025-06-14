@@ -8,7 +8,7 @@ import SidebarLayout from './components/layout/SidebarLayout';
 import CalendarContent from './components/layout/CalendarContent';
 import FloatingCreateButton from './components/ui/FloatingCreateButton';
 import EventModal from './components/ui/EventModal/EventModal';
-import { initializeSampleEvents } from './utils/sampleEvents';
+import { initializeEvents } from './utils/sampleEvents';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -32,7 +32,7 @@ function App() {
   useEffect(() => {
     // 이벤트가 없을 때만 샘플 데이터 추가
     if (events.length === 0) {
-      const sampleEvents = initializeSampleEvents(new Date(currentDate));
+      const sampleEvents = initializeEvents();
       dispatch(setEvents(sampleEvents));
     }
   }, [dispatch, currentDate, events.length]);
