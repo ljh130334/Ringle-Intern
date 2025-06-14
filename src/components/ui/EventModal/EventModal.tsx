@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { closeEventModal } from '../../../store/slices/uiSlice';
-import { addEvent, updateEvent } from '../../../store/slices/eventsSlice';
+import {
+  addEvent,
+  updateEvent,
+  deleteEvent,
+} from '../../../store/slices/eventsSlice';
 import { generateEventId } from '../../../utils/eventUtils';
 import type { CalendarEvent } from '../../../types';
 import EventFormHeader from './EventFormHeader';
@@ -94,6 +98,13 @@ const EventModal: React.FC = () => {
     handleClose();
   };
 
+  const handleDelete = () => {
+    if (eventFormData?.id && window.confirm('이벤트를 삭제하시겠습니까?')) {
+      dispatch(deleteEvent(eventFormData.id));
+      handleClose();
+    }
+  };
+
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({
       ...prev,
@@ -106,14 +117,12 @@ const EventModal: React.FC = () => {
     setShowDatePicker(!showDatePicker);
   };
 
-  // DayPicker에서 날짜 선택 핸들러
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       const year = date.getFullYear();
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
       const day = date.getDate().toString().padStart(2, '0');
       const dateString = `${year}-${month}-${day}`;
-
       handleInputChange('date', dateString);
       setShowDatePicker(false);
     }
@@ -163,8 +172,22 @@ const EventModal: React.FC = () => {
             onDateSelect={handleDateSelect}
           />
 
-          {/* 저장 버튼 */}
-          <div className="flex justify-end pt-4">
+          {/* 버튼 영역 */}
+          <div className="flex justify-between items-center pt-4">
+            {/* 삭제 버튼 */}
+            {eventFormData?.id && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-4 py-2 text-red-600 text-[14px] rounded-full hover:bg-red-50 transition-colors"
+              >
+                삭제
+              </button>
+            )}
+
+            {!eventFormData?.id && <div></div>}
+
+            {/* 저장 버튼 */}
             <button
               type="submit"
               className="px-6 py-2 bg-blue-600 text-white text-[14px] rounded-full hover:bg-blue-700 transition-colors"

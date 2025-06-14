@@ -50,15 +50,9 @@ const WeekView: React.FC = () => {
     );
   };
 
-  // 이벤트 클릭 핸들러
   const handleEventClick = (event: any, e: React.MouseEvent) => {
     e.stopPropagation();
-    dispatch(
-      openEventModal({
-        ...event,
-        mode: 'edit',
-      })
-    );
+    dispatch(openEventModal(event));
   };
 
   // 시간 포맷팅 함수 (한국어 형식)
@@ -125,12 +119,14 @@ const WeekView: React.FC = () => {
   // 종일 이벤트 컴포넌트
   const AllDayEvent: React.FC<{ event: Event }> = ({ event }) => (
     <div
-      className="text-white text-xs px-2 py-1 rounded-sm cursor-pointer hover:opacity-80 transition-opacity mb-1 truncate"
+      className="text-white text-xs px-2 py-1 rounded cursor-pointer hover:opacity-80 transition-opacity mb-1 truncate"
       style={{
         backgroundColor: event.color || '#4285f4',
         fontSize: '11px',
-        lineHeight: '14px',
-        minHeight: '18px',
+        lineHeight: '16px',
+        minHeight: '20px',
+        display: 'flex',
+        alignItems: 'center',
       }}
       onClick={(e) => handleEventClick(event, e)}
       title={event.title}
@@ -192,7 +188,7 @@ const WeekView: React.FC = () => {
       </div>
 
       {/* 종일 이벤트 영역 */}
-      <div className="flex border-b border-[#dadce0] border-t-0 h-5 pr-[15px]">
+      <div className="flex border-b border-[#dadce0] border-t-0 pr-[15px]">
         <div className="w-20 flex-shrink-0"></div>
         {weekEvents.map(({ date, events: dayEvents }) => {
           const allDayEvents = dayEvents.filter((event) => event.isAllDay);
@@ -200,7 +196,8 @@ const WeekView: React.FC = () => {
           return (
             <div
               key={formatDate(date)}
-              className="flex-1 border-l border-[#dadce0] min-h-[20px]"
+              className="flex-1 border-l border-[#dadce0] pr-3"
+              style={{ minHeight: allDayEvents.length > 0 ? 'auto' : '24px' }}
             >
               {allDayEvents.map((event) => (
                 <AllDayEvent key={event.id} event={event} />
