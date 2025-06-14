@@ -1,19 +1,34 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setSelectedDate } from '../../store/slices/calendarSlice';
 import { openEventModal } from '../../store/slices/uiSlice';
+import { deleteEvent } from '../../store/slices/eventsSlice';
 import { getWeekDays, formatDate, isTodayDate } from '../../utils/dateUtils';
-import { getEventsByDate } from '../../utils/eventUtils';
+import { getEventsByDate, sortEventsByTime } from '../../utils/eventUtils';
 
 const WeekView: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { currentDate, selectedDate } = useAppSelector(
-    (state) => state.calendar
-  );
+  const { currentDate } = useAppSelector((state) => state.calendar);
   const { events } = useAppSelector((state) => state.events);
 
   const currentDateObj = new Date(currentDate);
   const weekDays = getWeekDays(currentDateObj);
+
+  // 시간대 배열 생성 (1시부터 23시까지)
+  const timeSlots = useMemo(() => {
+    return Array.from({ length: 24 }, (_, hour) => hour);
+  }, []);
+
+  // 각 날짜별 이벤트 가져오기
+  const weekEvents = useMemo(() => {
+    return weekDays.map((date) => {
+      const dayEvents = getEventsByDate(events, date);
+      return {
+        date,
+        events: sortEventsByTime(dayEvents),
+      };
+    });
+  }, [weekDays, events]);
 
   const handleDayClick = (date: Date) => {
     const dateString = formatDate(date);
@@ -35,83 +50,178 @@ const WeekView: React.FC = () => {
     );
   };
 
+  // 시간 포맷팅 함수 (한국어 형식)
+  const formatTimeLabel = (hour: number): string => {
+    if (hour === 0) return '';
+    if (hour < 12) return `오전 ${hour}시`;
+    if (hour === 12) return '오후 12시';
+    return `오후 ${hour - 12}시`;
+  };
+
+  // 이벤트가 특정 시간대에 표시되는지 확인
+  interface Event {
+    id: string;
+    title: string;
+    startTime: string;
+    endTime: string;
+    isAllDay: boolean;
+    color?: string;
+  }
+
+  const getEventsForTimeSlot = (dayEvents: Event[], hour: number) => {
+    return dayEvents.filter((event) => {
+      if (event.isAllDay) return false;
+
+      const eventStartHour = parseInt(event.startTime.split(':')[0]);
+      const eventEndHour = parseInt(event.endTime.split(':')[0]);
+      const eventEndMin = parseInt(event.endTime.split(':')[1]);
+
+      return (
+        hour >= eventStartHour &&
+        (hour < eventEndHour || (hour === eventEndHour && eventEndMin === 0))
+      );
+    });
+  };
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-white">
       {/* 주간 헤더 */}
-      <div className="grid grid-cols-8 gap-px bg-gray-200 border-b">
-        <div className="bg-gray-50 p-3"></div>
-        {weekDays.map((date) => {
+      <div className="flex border-b border-gray-200 bg-white sticky top-0 z-10 pr-[15px]">
+        <div className="w-20 flex-shrink-0 p-3 pb-1 flex items-end justify-center">
+          <div className="text-[11px] text-[#444746]">GMT+09</div>
+        </div>
+
+        {/* 요일별 헤더 */}
+        {weekDays.map((date, index) => {
           const dateString = formatDate(date);
           const isTodayCheck = isTodayDate(date);
-          const isSelected = selectedDate === dateString;
+          const weekdayNames = ['일', '월', '화', '수', '목', '금', '토'];
 
           return (
             <div
               key={dateString}
-              className={`bg-gray-50 p-3 text-center cursor-pointer ${
-                isTodayCheck ? 'bg-blue-50' : ''
-              } ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
+              className="flex-1 p-3 pt-2 text-center cursor-pointer group"
               onClick={() => handleDayClick(date)}
             >
-              <div className="text-xs text-gray-600">
-                {['일', '월', '화', '수', '목', '금', '토'][date.getDay()]}
-              </div>
+              {/* 요일 이름 */}
               <div
-                className={`text-lg font-medium ${isTodayCheck ? 'text-blue-600' : ''}`}
+                className={`text-[11px] mb-1 font-medium ${
+                  isTodayCheck ? 'text-[#0b57d0]' : 'text-[#444746]'
+                }`}
               >
-                {date.getDate()}
+                {weekdayNames[index]}
+              </div>
+
+              {/* 날짜 숫자 */}
+              <div className="flex justify-center">
+                <div
+                  className={`w-[46px] h-[46px] flex items-center justify-center text-2xl font-normal ${
+                    isTodayCheck
+                      ? 'bg-[#0b57d0] text-white rounded-full'
+                      : 'text-[#3c4043] group-hover:bg-[#e5e7eb] group-hover:rounded-full transition-all duration-200'
+                  }`}
+                >
+                  {date.getDate()}
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* 시간 그리드 */}
+      {/* 시간 그리드 컨테이너 */}
       <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-8 gap-px bg-gray-200">
-          {Array.from({ length: 24 }, (_, hour) => (
-            <React.Fragment key={hour}>
-              <div className="bg-white p-2 text-xs text-gray-500 text-right border-r">
-                {hour === 0
-                  ? '12 AM'
-                  : hour < 12
-                    ? `${hour} AM`
-                    : hour === 12
-                      ? '12 PM'
-                      : `${hour - 12} PM`}
+        <div className="min-h-full">
+          {timeSlots.map((hour) => (
+            <div key={hour} className="flex relative">
+              {/* 시간 라벨 */}
+              <div className="w-20 flex-shrink-0 relative">
+                {hour !== 0 && (
+                  <div className="absolute -top-[9px] right-[17px] text-[11px] text-[#444746] bg-white px-1">
+                    {formatTimeLabel(hour)}
+                  </div>
+                )}
               </div>
-              {weekDays.map((date) => {
-                const dateString = formatDate(date);
-                const dayEvents = getEventsByDate(events, date).filter(
-                  (event) => {
-                    if (event.isAllDay) return false;
-                    const eventHour = parseInt(event.startTime.split(':')[0]);
-                    return eventHour === hour;
-                  }
-                );
+
+              {/* 각 날짜별 시간 슬롯 */}
+              {weekEvents.map(({ date, events: dayEvents }) => {
+                const eventsInSlot = getEventsForTimeSlot(dayEvents, hour);
 
                 return (
                   <div
-                    key={`${dateString}-${hour}`}
-                    className="bg-white p-1 min-h-[60px] border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                    key={`${formatDate(date)}-${hour}`}
+                    className="flex-1 relative border-l border-b border-[#dadce0] min-h-[48px] cursor-pointer"
                     onClick={() => handleTimeSlotClick(date, hour)}
                   >
-                    {dayEvents.map((event) => (
-                      <div
-                        key={event.id}
-                        className="text-xs p-1 rounded mb-1"
-                        style={{
-                          backgroundColor: event.color + '20',
-                          color: event.color,
-                        }}
-                      >
-                        {event.title}
-                      </div>
-                    ))}
+                    {eventsInSlot.map((event, eventIndex) => {
+                      const eventStartHour = parseInt(
+                        event.startTime.split(':')[0]
+                      );
+                      const eventStartMin = parseInt(
+                        event.startTime.split(':')[1]
+                      );
+                      const eventEndHour = parseInt(
+                        event.endTime.split(':')[0]
+                      );
+                      const eventEndMin = parseInt(event.endTime.split(':')[1]);
+
+                      if (eventStartHour === hour) {
+                        const durationInMinutes =
+                          eventEndHour * 60 +
+                          eventEndMin -
+                          (eventStartHour * 60 + eventStartMin);
+                        const heightInPixels = Math.max(
+                          (durationInMinutes / 60) * 48,
+                          24
+                        );
+                        const topOffset = (eventStartMin / 60) * 48;
+
+                        return (
+                          <div
+                            key={event.id}
+                            className="absolute left-1 right-1 rounded px-2 py-1 text-xs font-medium text-white shadow-sm cursor-pointer hover:shadow-md z-10"
+                            style={{
+                              backgroundColor: event.color || '#4285f4',
+                              height: `${heightInPixels}px`,
+                              top: `${topOffset}px`,
+                              marginLeft: `${eventIndex * 2}px`,
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (e.detail === 2) {
+                                if (
+                                  window.confirm('이벤트를 삭제하시겠습니까?')
+                                ) {
+                                  dispatch(deleteEvent(event.id));
+                                }
+                              }
+                            }}
+                            onContextMenu={(e) => {
+                              e.preventDefault();
+                              if (
+                                window.confirm('이벤트를 삭제하시겠습니까?')
+                              ) {
+                                dispatch(deleteEvent(event.id));
+                              }
+                            }}
+                          >
+                            <div className="truncate font-medium">
+                              {event.title}
+                            </div>
+                            {!event.isAllDay && (
+                              <div className="text-xs opacity-90">
+                                {event.startTime} - {event.endTime}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
                   </div>
                 );
               })}
-            </React.Fragment>
+            </div>
           ))}
         </div>
       </div>

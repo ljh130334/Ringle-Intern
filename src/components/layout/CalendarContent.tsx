@@ -16,11 +16,15 @@ const CalendarContent: React.FC = () => {
       case 'day':
         return <DayView />;
       default:
-        return <MonthView />;
+        return <WeekView />;
     }
   };
 
-  return <main className="calendar-content">{renderView()}</main>;
+  return (
+    <main className="h-full flex flex-col w-full bg-white overflow-hidden rounded-[28px] mr-[56px]">
+      {renderView()}
+    </main>
+  );
 };
 
 export default CalendarContent;
